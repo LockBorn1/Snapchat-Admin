@@ -13,18 +13,61 @@
             height: 100vh;
             margin: 0;
             font-family: 'Courier New', monospace;
+            color: #0f0; /* Default green */
         }
-        #terminal {
+        #login-container, #terminal {
             background-color: #000;
-            color: #0f0;
+            border: 2px solid #0f0;
+            padding: 20px;
             width: 80%;
             max-width: 800px;
+            text-align: center;
+        }
+        #login-container {
+            display: block;
+        }
+        #terminal {
+            display: none;
             height: 80vh;
-            padding: 20px;
-            border: 2px solid #0f0;
             overflow-y: auto;
             white-space: pre-wrap;
             font-size: 16px;
+        }
+        #login-container h1 {
+            font-size: 24px;
+            margin: 0 0 20px;
+            text-align: center;
+        }
+        #login-container input {
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            padding: 8px;
+            margin: 10px 0;
+            width: 80%;
+            max-width: 300px;
+        }
+        #login-container button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        #login-container button:hover {
+            background: #0a0;
+        }
+        #error {
+            color: #f00;
+            margin-top: 10px;
+        }
+        #output {
+            text-align: left;
         }
         #input-line {
             display: flex;
@@ -42,30 +85,91 @@
             outline: none;
             flex-grow: 1;
         }
+        .blue {
+            color: #00f !important;
+            border-color: #00f !important;
+        }
+        .blue #input, .blue #prompt, .blue #output {
+            color: #00f !important;
+        }
+        .blue #login-container, .blue #terminal {
+            border-color: #00f !important;
+        }
+        .red {
+            color: #f00 !important;
+            border-color: #f00 !important;
+        }
+        .red #input, .red #prompt, .red #output {
+            color: #f00 !important;
+        }
+        .red #login-container, .red #terminal {
+            border-color: #f00 !important;
+        }
     </style>
 </head>
 <body>
+    <div id="login-container">
+        <h1>=======================================================</h1>
+        <h1>Snapchat Main Server Management Console</h1>
+        <h1>=======================================================</h1>
+        <p>[ Secure Access Terminal v5.2 - 2025-05-13 ]</p>
+        <p>[ Server ID: SC-Prod-4721 - Node Cluster: Alpha-7 ]</p>
+        <p>[ Encryption Key: ENC-1234-5678-X ]</p>
+        <input type="text" id="username" placeholder="Username" autofocus>
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div id="error"></div>
+    </div>
     <div id="terminal">
         <div id="output"></div>
         <div id="input-line">
             <span id="prompt">></span>
-            <input type="text" id="input" autofocus>
+            <input type="text" id="input">
         </div>
     </div>
     <script>
+        const loginContainer = document.getElementById('login-container');
+        const terminal = document.getElementById('terminal');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorDiv = document.getElementById('error');
         const output = document.getElementById('output');
         const input = document.getElementById('input');
         const prompt = document.getElementById('prompt');
-        let state = 'login_username';
-        let username = '';
-        let password = '';
+        let state = 'main_menu';
         let logs = ['2025-05-13 12:35:45 - System initialized'];
         let lastAction = 'None';
+        let theme = 'green';
 
         // Predefined data
         const userList = ['kaitlyn472', 'joshuax819', 'emilyzz305', 'tylerrr127', 'sophiax644', 'brandon291', 'laurenn508', 'zachary773', 'oliviaa962', 'michael337', 'avaprin184', 'ryanmax429', 'emmafox651', 'lukepop876', 'ameliak103', 'nathanx258', 'juliazz541', 'dylanxx692', 'chloeee407', 'jacobbb930'];
         const messageList = ['Yo, that party was lit!', 'Send me that pic ASAP', 'LOL that snap was wild', 'Meet me at 5?', 'Check out this filter!', 'Where you at rn?', 'Haha, you won\'t believe this', 'New streak? Let\'s go!', 'That story was fire', 'Missed your call, what\'s up?', 'You see my last snap?', 'Let\'s hit 100 days!', 'This filter is dope', 'What\'s good tonight?', 'Save that snap for me', 'Just posted a story', 'You at the game?', 'Need that group chat', 'Yo, you free now?', 'That was hilarious'];
         const snapList = ['Selfie with dog filter', 'Group pic at beach', 'Sunset video', 'Dance clip at club', 'Food pic at cafe', 'Gym workout snap', 'Pet video', 'Concert crowd', 'City skyline', 'Random meme', 'Car selfie', 'Night sky timelapse', 'Skateboard trick', 'Coffee shop vibe', 'Dog running in park', 'Street art snap', 'Pool party clip', 'Bonfire pic', 'Hiking trail view', 'Snowboarding clip'];
+
+        function login() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (username === 'Gage@snapchat.com' && password === 'Gmilner1174') {
+                loginContainer.style.display = 'none';
+                terminal.style.display = 'block';
+                input.focus();
+                addOutput('=======================================================');
+                addOutput('       Snapchat Server Management Dashboard');
+                addOutput('=======================================================');
+                addOutput('[ Logged in as: Gage@snapchat.com ]');
+                addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
+                addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
+                addOutput(`[ Last Action: ${lastAction} ]`);
+                addOutput('Please select an option:');
+                addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
+                lastAction = 'Successful login';
+                logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Successful login: Gage@snapchat.com`);
+            } else {
+                errorDiv.textContent = '[ERROR] Invalid username or password.';
+                logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Failed login attempt`);
+                lastAction = 'Failed login attempt';
+            }
+        }
 
         function addOutput(text) {
             output.innerHTML += text + '\n';
@@ -85,45 +189,18 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
+        function setTheme(newTheme) {
+            theme = newTheme;
+            document.body.className = newTheme;
+            terminal.className = newTheme;
+            loginContainer.className = newTheme;
+        }
+
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const command = input.value.trim();
                 input.value = '';
-                if (state === 'login_username') {
-                    username = command;
-                    addOutput(`Username: ${command}`);
-                    addOutput('Username Accepted. Enter Password...');
-                    showPrompt('Password: ');
-                    state = 'login_password';
-                    input.type = 'password';
-                } else if (state === 'login_password') {
-                    password = command;
-                    addOutput('Password: [HIDDEN]');
-                    if (username === 'Gage@snapchat.com' && password === 'Gmilner1174') {
-                        clearOutput();
-                        addOutput('=======================================================');
-                        addOutput('       Snapchat Server Management Dashboard');
-                        addOutput('=======================================================');
-                        addOutput(`[ Logged in as: ${username} ]`);
-                        addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
-                        addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
-                        addOutput(`[ Last Action: ${lastAction} ]`);
-                        addOutput('Please select an option:');
-                        addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
-                        lastAction = 'Successful login';
-                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Successful login: ${username}`);
-                        showPrompt('> ');
-                        state = 'main_menu';
-                        input.type = 'text';
-                    } else {
-                        addOutput('[ERROR] Invalid credentials.');
-                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Failed login attempt`);
-                        lastAction = 'Failed login attempt';
-                        showPrompt('Username: ');
-                        state = 'login_username';
-                        input.type = 'text';
-                    }
-                } else if (state === 'main_menu') {
+                if (state === 'main_menu') {
                     if (command === '2') {
                         clearOutput();
                         addOutput('=======================================================');
@@ -153,6 +230,14 @@
                             lastAction = 'Server ping';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Server ping executed`);
                         }, 2000);
+                    } else if (command === '18') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('            Change Terminal Theme');
+                        addOutput('=======================================================');
+                        addOutput('Select a theme:');
+                        addOutput('1. Green (Default)\n2. Blue\n3. Red\n4. Back to Main Menu');
+                        state = 'change_theme';
                     } else if (command === '19') {
                         clearOutput();
                         addOutput('=======================================================');
@@ -161,8 +246,11 @@
                         addOutput('[INFO] Terminal locked by Gage@snapchat.com.');
                         lastAction = 'Locked terminal';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Terminal locked`);
-                        showPrompt('Username: ');
-                        state = 'login_username';
+                        loginContainer.style.display = 'block';
+                        terminal.style.display = 'none';
+                        usernameInput.value = '';
+                        passwordInput.value = '';
+                        errorDiv.textContent = '';
                     } else {
                         addOutput('[ERROR] Invalid Option');
                         lastAction = 'Invalid menu option';
@@ -180,7 +268,7 @@
                         addOutput('=======================================================');
                         addOutput('       Snapchat Server Management Dashboard');
                         addOutput('=======================================================');
-                        addOutput(`[ Logged in as: ${username} ]`);
+                        addOutput('[ Logged in as: Gage@snapchat.com ]');
                         addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
                         addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
                         addOutput(`[ Last Action: ${lastAction} ]`);
@@ -283,8 +371,51 @@
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
                     }, 1000);
+                } else if (state === 'change_theme') {
+                    if (command === '1') {
+                        setTheme('green');
+                        addOutput('[SUCCESS] Theme changed to Green.');
+                        lastAction = 'Changed theme to Green';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Changed theme to Green`);
+                    } else if (command === '2') {
+                        setTheme('blue');
+                        addOutput('[SUCCESS] Theme changed to Blue.');
+                        lastAction = 'Changed theme to Blue';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Changed theme to Blue`);
+                    } else if (command === '3') {
+                        setTheme('red');
+                        addOutput('[SUCCESS] Theme changed to Red.');
+                        lastAction = 'Changed theme to Red';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Changed theme to Red`);
+                    } else if (command === '4') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('       Snapchat Server Management Dashboard');
+                        addOutput('=======================================================');
+                        addOutput('[ Logged in as: Gage@snapchat.com ]');
+                        addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
+                        addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
+                        addOutput(`[ Last Action: ${lastAction} ]`);
+                        addOutput('Please select an option:');
+                        addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
+                        lastAction = 'Returned to main menu';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Returned to main menu`);
+                        state = 'main_menu';
+                    } else {
+                        addOutput('[ERROR] Invalid Theme');
+                        lastAction = 'Invalid theme selection';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid theme selection`);
+                    }
                 }
             }
+        });
+
+        // Allow Enter key to trigger login
+        usernameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') passwordInput.focus();
+        });
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') login();
         });
     </script>
 </body>
