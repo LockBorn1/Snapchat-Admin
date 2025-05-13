@@ -61,9 +61,11 @@
             padding: 10px 20px;
             cursor: pointer;
             margin-top: 10px;
+            transition: background 0.3s;
         }
         #login-container button:hover {
             background: #0a0;
+            box-shadow: 0 0 5px #0f0;
         }
         #error {
             color: #f00;
@@ -77,6 +79,16 @@
             font-weight: bold;
             text-align: center;
             margin: 10px 0;
+            animation: type 1s steps(40, end);
+        }
+        #status-bar {
+            position: sticky;
+            top: 0;
+            background: #000;
+            border-bottom: 1px solid #0f0;
+            padding: 5px;
+            font-size: 14px;
+            text-align: left;
         }
         #input-line {
             display: flex;
@@ -85,8 +97,7 @@
             padding-top: 10px;
         }
         #prompt {
-            color: #0f0;
-            animation: blink 1s step-end infinite;
+            animation: rgb 6s infinite;
         }
         #input {
             background: none;
@@ -97,12 +108,16 @@
             outline: none;
             flex-grow: 1;
         }
+        .timestamp {
+            color: #888;
+            margin-right: 10px;
+        }
         .blue {
             color: #00f !important;
             border-color: #00f !important;
             box-shadow: 0 0 10px #00f, 0 0 20px #00f !important;
         }
-        .blue #input, .blue #prompt, .blue #output {
+        .blue #input, .blue #output {
             color: #00f !important;
         }
         .blue #login-container, .blue #terminal {
@@ -113,19 +128,34 @@
             border-color: #f00 !important;
             box-shadow: 0 0 10px #f00, 0 0 20px #f00 !important;
         }
-        .red #input, .red #prompt, .red #output {
+        .red #input, .red #output {
             color: #f00 !important;
         }
         .red #login-container, .red #terminal {
             border-color: #f00 !important;
         }
-        @keyframes blink {
-            50% { opacity: 0; }
+        @keyframes rgb {
+            0% { color: #f00; }
+            33% { color: #0f0; }
+            66% { color: #00f; }
+            100% { color: #f00; }
+        }
+        @keyframes type {
+            from { width: 0; }
+            to { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div id="login-container">
+        <pre>
+  ____                               _       
+ |  _ \                             | |      
+ | |_) | __ _ _ __   ___   ___  __ _| |_ ___ 
+ |  _ < / _` | '_ \ / __| / __|/ _` | __/ __|
+ | |_) | (_| | | | | (__  \__ \ (_| | |_\__ \
+ |____/ \__,_|_| |_| \___| |___/\__,_|\__|___/
+        </pre>
         <h1>=======================================================</h1>
         <h1>Snapchat Main Server Management Console</h1>
         <h1>=======================================================</h1>
@@ -138,9 +168,10 @@
         <div id="error"></div>
     </div>
     <div id="terminal">
+        <div id="status-bar"></div>
         <div id="output"></div>
         <div id="input-line">
-            <span id="prompt">></span>
+            <span id="prompt"></span>
             <input type="text" id="input">
         </div>
     </div>
@@ -153,10 +184,12 @@
         const output = document.getElementById('output');
         const input = document.getElementById('input');
         const prompt = document.getElementById('prompt');
+        const statusBar = document.getElementById('status-bar');
         let state = 'main_menu';
         let logs = ['2025-05-13 12:35:45 - System initialized'];
         let lastAction = 'None';
         let theme = 'green';
+        let sessionToken = `SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X`;
 
         // Predefined data
         const userList = ['kaitlyn472', 'joshuax819', 'emilyzz305', 'tylerrr127', 'sophiax644', 'brandon291', 'laurenn508', 'zachary773', 'oliviaa962', 'michael337', 'avaprin184', 'ryanmax429', 'emmafox651', 'lukepop876', 'ameliak103', 'nathanx258', 'juliazz541', 'dylanxx692', 'chloeee407', 'jacobbb930'];
@@ -182,8 +215,10 @@
 
         function addOutput(text, isHeader = false) {
             const div = document.createElement('div');
-            div.textContent = text;
+            const timestamp = `[${new Date().toLocaleTimeString()}] `;
+            div.textContent = isHeader ? text : `${timestamp}${text}`;
             if (isHeader) div.className = 'header';
+            else div.className = 'timestamped';
             output.appendChild(div);
             output.scrollTop = output.scrollHeight;
             if (!isHeader) logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - ${text.replace(/\[.*?\] /, '')}`);
@@ -195,6 +230,10 @@
 
         function showPrompt(text) {
             prompt.textContent = text;
+        }
+
+        function updateStatusBar() {
+            statusBar.textContent = `User: Gage@snapchat.com | Session: ${sessionToken} | Last Action: ${lastAction} | Time: ${new Date().toLocaleString()}`;
         }
 
         function randomInt(min, max) {
@@ -214,11 +253,14 @@
             addOutput('       Snapchat Server Management Dashboard', true);
             addOutput('=======================================================', true);
             addOutput('[ Logged in as: Gage@snapchat.com ]');
-            addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
+            addOutput(`[ Session Token: ${sessionToken} ]`);
             addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
             addOutput(`[ Last Action: ${lastAction} ]`);
             addOutput('Please select an option:');
             addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
+            state = 'main_menu';
+            showPrompt('Main Menu>');
+            updateStatusBar();
         }
 
         input.addEventListener('keydown', (e) => {
@@ -232,6 +274,7 @@
                             addOutput(`[SUCCESS] Ping response: ${randomInt(50, 150)}ms`);
                             lastAction = 'Server ping';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Server ping executed`);
+                            updateStatusBar();
                         }, 2000);
                     } else if (command === '2') {
                         clearOutput();
@@ -243,6 +286,8 @@
                         lastAction = 'Entered user management';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Entered user management`);
                         state = 'manage_users';
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     } else if (command === '3') {
                         clearOutput();
                         addOutput('=======================================================', true);
@@ -254,6 +299,7 @@
                             addOutput('[SUCCESS] Log retrieval complete.');
                             lastAction = 'Viewed system logs';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed system logs`);
+                            updateStatusBar();
                         }, 1000);
                     } else if (command === '4') {
                         clearOutput();
@@ -269,10 +315,13 @@
                             addOutput('[SUCCESS] System status retrieved.');
                             lastAction = 'Checked system status';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Checked system status`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '5') {
                         addOutput('Enter notification message:');
                         state = 'send_notification';
+                        showPrompt('Enter Notification>');
+                        updateStatusBar();
                     } else if (command === '6') {
                         clearOutput();
                         addOutput('=======================================================', true);
@@ -286,6 +335,7 @@
                                 addOutput(`[SUCCESS] Backup completed: SC-Backup-${new Date().toISOString().split('T')[0]}.tar.gz`);
                                 lastAction = 'Database backup';
                                 logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Database backup completed`);
+                                showMainMenu();
                             }, 1000);
                         }, 1000);
                     } else if (command === '7') {
@@ -301,6 +351,7 @@
                             addOutput('[SUCCESS] Security scan complete.');
                             lastAction = 'Security scan';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Security scan completed`);
+                            updateStatusBar();
                         }, 2000);
                     } else if (command === '8') {
                         clearOutput();
@@ -315,6 +366,7 @@
                                 addOutput('[SUCCESS] Server restarted successfully.');
                                 lastAction = 'Server restart';
                                 logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Server restarted`);
+                                showMainMenu();
                             }, 1000);
                         }, 1000);
                     } else if (command === '9') {
@@ -330,6 +382,7 @@
                             addOutput('[SUCCESS] Account audit complete.');
                             lastAction = 'Audited accounts';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Audited accounts`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '10') {
                         clearOutput();
@@ -342,9 +395,10 @@
                             addOutput('[PROGRESS] Downloading updates... 50%');
                             setTimeout(() => {
                                 addOutput('[PROGRESS] Installing updates... 100%');
-                                addOutput('[SUCCESS] Software updated to v${randomInt(5, 7)}.${randomInt(0, 9)}.${randomInt(0, 9)}');
+                                addOutput(`[SUCCESS] Software updated to v${randomInt(5, 7)}.${randomInt(0, 9)}.${randomInt(0, 9)}`);
                                 lastAction = 'Software update';
                                 logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Software updated`);
+                                showMainMenu();
                             }, 1000);
                         }, 1000);
                     } else if (command === '11') {
@@ -360,6 +414,7 @@
                             addOutput('[SUCCESS] Bandwidth monitoring complete.');
                             lastAction = 'Monitored bandwidth';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Monitored bandwidth`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '12') {
                         clearOutput();
@@ -374,6 +429,7 @@
                                 addOutput(`[SUCCESS] Reports exported to SC-Reports-${new Date().toISOString().split('T')[0]}.zip`);
                                 lastAction = 'Exported reports';
                                 logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Exported reports`);
+                                showMainMenu();
                             }, 1000);
                         }, 1000);
                     } else if (command === '13') {
@@ -389,6 +445,7 @@
                             addOutput('[SUCCESS] User activity analysis complete.');
                             lastAction = 'Analyzed user activity';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Analyzed user activity`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '14') {
                         clearOutput();
@@ -403,6 +460,7 @@
                             addOutput('[SUCCESS] Firewall configuration complete.');
                             lastAction = 'Configured firewall';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Configured firewall`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '15') {
                         clearOutput();
@@ -417,6 +475,7 @@
                             addOutput(`[SUCCESS] Security report generated: SC-Security-${new Date().toISOString().split('T')[0]}.pdf`);
                             lastAction = 'Generated security report';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Generated security report`);
+                            showMainMenu();
                         }, 1500);
                     } else if (command === '16') {
                         clearOutput();
@@ -430,6 +489,7 @@
                             addOutput('[SUCCESS] Archive purge complete.');
                             lastAction = 'Purged archives';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Purged archives`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '17') {
                         clearOutput();
@@ -444,6 +504,7 @@
                             addOutput('[SUCCESS] Archive analytics complete.');
                             lastAction = 'Archive analytics';
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Archive analytics completed`);
+                            updateStatusBar();
                         }, 1500);
                     } else if (command === '18') {
                         clearOutput();
@@ -453,6 +514,8 @@
                         addOutput('Select a theme:');
                         addOutput('1. Green (Default)\n2. Blue\n3. Red\n4. Back to Main Menu');
                         state = 'change_theme';
+                        showPrompt('Change Theme>');
+                        updateStatusBar();
                     } else if (command === '19') {
                         clearOutput();
                         addOutput('=======================================================', true);
@@ -466,48 +529,69 @@
                         usernameInput.value = '';
                         passwordInput.value = '';
                         errorDiv.textContent = '';
+                        updateStatusBar();
                     } else {
                         addOutput('[ERROR] Invalid Option');
                         lastAction = 'Invalid menu option';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid menu option selected`);
+                        updateStatusBar();
                     }
                 } else if (state === 'manage_users') {
                     if (command === '1') {
                         addOutput('Enter User ID to suspend:');
                         state = 'suspend_account';
+                        showPrompt('Suspend Account>');
+                        updateStatusBar();
                     } else if (command === '2') {
                         addOutput('Enter User ID to view profile:');
                         state = 'view_user_profile';
+                        showPrompt('View Profile>');
+                        updateStatusBar();
                     } else if (command === '3') {
                         addOutput('Enter User ID to reset password:');
                         state = 'reset_password';
+                        showPrompt('Reset Password>');
+                        updateStatusBar();
                     } else if (command === '4') {
                         addOutput('Enter Username to view profile:');
                         state = 'view_profile_browser';
+                        showPrompt('View Profile (Browser)>');
+                        updateStatusBar();
                     } else if (command === '5') {
                         addOutput('Enter User ID to view deleted messages:');
                         state = 'view_deleted_messages';
+                        showPrompt('View Deleted Messages>');
+                        updateStatusBar();
                     } else if (command === '6') {
                         addOutput('Enter User ID to export data:');
                         state = 'export_user_data';
+                        showPrompt('Export User Data>');
+                        updateStatusBar();
                     } else if (command === '7') {
                         addOutput('Enter User ID to delete account:');
                         state = 'delete_account';
+                        showPrompt('Delete Account>');
+                        updateStatusBar();
                     } else if (command === '8') {
                         addOutput('Enter User ID to view search history:');
                         state = 'view_search_history';
+                        showPrompt('View Search History>');
+                        updateStatusBar();
                     } else if (command === '9') {
                         addOutput('Enter User ID to view deleted snaps:');
                         state = 'view_deleted_snaps';
+                        showPrompt('View Deleted Snaps>');
+                        updateStatusBar();
                     } else if (command === '10') {
                         showMainMenu();
                         lastAction = 'Returned to main menu';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Returned to main menu`);
-                        state = 'main_menu';
+                        updateStatusBar();
                     } else {
                         addOutput('[ERROR] Invalid Option');
                         lastAction = 'Invalid user management option';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid user management option`);
+                        updateStatusBar();
                     }
                 } else if (state === 'suspend_account') {
                     const userId = command;
@@ -518,6 +602,8 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Suspended account: ${userId}`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'view_user_profile') {
                     const userId = command;
@@ -532,6 +618,8 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed profile: ${userId}`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'reset_password') {
                     const userId = command;
@@ -542,16 +630,22 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Reset password: ${userId}`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'view_profile_browser') {
                     const userId = command;
                     addOutput(`[INFO] Opening profile for ${userId}...`);
                     setTimeout(() => {
-                        addOutput(`[SUCCESS] Please open https://www.snapchat.com/add/${userId} in your browser.`);
+                        const url = `https://www.snapchat.com/add/${userId}`;
+                        window.open(url, '_blank');
+                        addOutput(`[SUCCESS] Profile opened in new tab: ${url}`);
                         lastAction = `Viewed profile: ${userId} in browser`;
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed profile in browser: ${userId}`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'view_deleted_messages') {
                     const userId = command;
@@ -572,6 +666,8 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed deleted messages for: ${userId} (${msgCount} messages)`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'export_user_data') {
                     const userId = command;
@@ -585,7 +681,9 @@
                             logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Exported user data: ${userId}`);
                             state = 'manage_users';
                             addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
-                        }, 1000);
+                            showPrompt('User Management>');
+                            updateStatusBar();
+                    }, 1000);
                     }, 1000);
                 } else if (state === 'delete_account') {
                     const userId = command;
@@ -596,6 +694,8 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Deleted account: ${userId}`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'view_search_history') {
                     const userId = command;
@@ -615,6 +715,8 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed search history: ${userId}`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'view_deleted_snaps') {
                     const userId = command;
@@ -635,6 +737,8 @@
                         lastAction = `Viewed deleted snaps: ${userId}`;
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed deleted snaps for: ${userId} (${snapCount} snaps)`);
                         state = 'snap_options';
+                        showPrompt('Snap Options>');
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'snap_options') {
                     if (command === '1') {
@@ -648,6 +752,8 @@
                                 logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Exported snap images`);
                                 state = 'manage_users';
                                 addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                                showPrompt('User Management>');
+                                updateStatusBar();
                             }, 1000);
                         }, 1000);
                     } else if (command === '2') {
@@ -661,16 +767,21 @@
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed snap metadata`);
                         state = 'manage_users';
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     } else if (command === '3') {
                         addOutput('Returning to User Management...');
                         addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
                         lastAction = 'Returned to user management';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Returned to user management`);
                         state = 'manage_users';
+                        showPrompt('User Management>');
+                        updateStatusBar();
                     } else {
                         addOutput('[ERROR] Invalid Option');
                         lastAction = 'Invalid snap option';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid snap option`);
+                        updateStatusBar();
                     }
                 } else if (state === 'send_notification') {
                     const message = command;
@@ -680,7 +791,7 @@
                         lastAction = 'Sent notification';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Sent notification: ${message}`);
                         showMainMenu();
-                        state = 'main_menu';
+                        updateStatusBar();
                     }, 1000);
                 } else if (state === 'change_theme') {
                     if (command === '1') {
@@ -702,12 +813,12 @@
                         showMainMenu();
                         lastAction = 'Returned to main menu';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Returned to main menu`);
-                        state = 'main_menu';
                     } else {
                         addOutput('[ERROR] Invalid Theme');
                         lastAction = 'Invalid theme selection';
                         logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid theme selection`);
                     }
+                    updateStatusBar();
                 }
             }
         });
