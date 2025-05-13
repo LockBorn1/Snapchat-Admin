@@ -14,7 +14,6 @@
             margin: 0;
             font-family: 'Courier New', monospace;
             color: #0f0;
-            transition: background-color 0.3s ease;
         }
         #login-container, #terminal {
             background-color: #000;
@@ -25,7 +24,6 @@
             text-align: center;
             box-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
             background: linear-gradient(to bottom, #000, #111);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         #login-container {
             display: block;
@@ -53,7 +51,6 @@
             margin: 8px 0;
             width: 80%;
             max-width: 300px;
-            transition: border-color 0.3s ease;
         }
         #login-container input:focus {
             border-color: #0a0;
@@ -69,7 +66,6 @@
             padding: 8px 16px;
             cursor: pointer;
             margin-top: 8px;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         #login-container button:hover {
             background: #0a0;
@@ -97,7 +93,6 @@
             padding: 5px;
             font-size: 14px;
             text-align: left;
-            transition: border-color 0.3s ease;
         }
         #input-line {
             display: flex;
@@ -106,7 +101,7 @@
             padding-top: 8px;
         }
         #prompt {
-            animation: rgb 6s infinite;
+            color: #0f0;
         }
         #input {
             background: none;
@@ -116,7 +111,6 @@
             font-size: 16px;
             outline: none;
             flex-grow: 1;
-            transition: color 0.3s ease;
         }
         .timestamp {
             color: #888;
@@ -143,12 +137,6 @@
         }
         .red #login-container, .red #terminal {
             border-color: #f00 !important;
-        }
-        @keyframes rgb {
-            0% { color: #f00; }
-            33% { color: #0f0; }
-            66% { color: #00f; }
-            100% { color: #f00; }
         }
         pre {
             white-space: pre;
@@ -259,11 +247,12 @@
             addOutput('=======================================================', true);
             addOutput('       Snapchat Server Management Dashboard', true);
             addOutput('=======================================================', true);
-            addOutput('[ Logged in as: Gage@snapchat.com ]');
+            addOutput(`[ Logged in as: Gage@snapchat.com ]`);
             addOutput(`[ Session Token: ${sessionToken} ]`);
             addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
             addOutput(`[ Last Action: ${lastAction} ]`);
-            addOutput('Please select an option:');
+            addOutput('-------------------------');
+            addOutput('Available Options:');
             addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
             state = 'main_menu';
             showPrompt('Main Menu>');
