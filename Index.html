@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snapchat Server Management Console</title>
+    <style>
+        body {
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        #terminal {
+            background-color: #000;
+            color: #0f0;
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            padding: 20px;
+            border: 2px solid #0f0;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 16px;
+        }
+        #input-line {
+            display: flex;
+            align-items: center;
+        }
+        #prompt {
+            color: #0f0;
+        }
+        #input {
+            background: none;
+            border: none;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            outline: none;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div id="output"></div>
+        <div id="input-line">
+            <span id="prompt">></span>
+            <input type="text" id="input" autofocus>
+        </div>
+    </div>
+    <script>
+        const output = document.getElementById('output');
+        const input = document.getElementById('input');
+        const prompt = document.getElementById('prompt');
+        let state = 'login_username';
+        let username = '';
+        let password = '';
+        let logs = ['2025-05-13 12:35:45 - System initialized'];
+        let lastAction = 'None';
+
+        // Predefined data
+        const userList = ['kaitlyn472', 'joshuax819', 'emilyzz305', 'tylerrr127', 'sophiax644', 'brandon291', 'laurenn508', 'zachary773', 'oliviaa962', 'michael337', 'avaprin184', 'ryanmax429', 'emmafox651', 'lukepop876', 'ameliak103', 'nathanx258', 'juliazz541', 'dylanxx692', 'chloeee407', 'jacobbb930'];
+        const messageList = ['Yo, that party was lit!', 'Send me that pic ASAP', 'LOL that snap was wild', 'Meet me at 5?', 'Check out this filter!', 'Where you at rn?', 'Haha, you won\'t believe this', 'New streak? Let\'s go!', 'That story was fire', 'Missed your call, what\'s up?', 'You see my last snap?', 'Let\'s hit 100 days!', 'This filter is dope', 'What\'s good tonight?', 'Save that snap for me', 'Just posted a story', 'You at the game?', 'Need that group chat', 'Yo, you free now?', 'That was hilarious'];
+        const snapList = ['Selfie with dog filter', 'Group pic at beach', 'Sunset video', 'Dance clip at club', 'Food pic at cafe', 'Gym workout snap', 'Pet video', 'Concert crowd', 'City skyline', 'Random meme', 'Car selfie', 'Night sky timelapse', 'Skateboard trick', 'Coffee shop vibe', 'Dog running in park', 'Street art snap', 'Pool party clip', 'Bonfire pic', 'Hiking trail view', 'Snowboarding clip'];
+
+        function addOutput(text) {
+            output.innerHTML += text + '\n';
+            output.scrollTop = output.scrollHeight;
+            logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - ${text.replace(/\[.*?\] /, '')}`);
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        function showPrompt(text) {
+            prompt.textContent = text;
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const command = input.value.trim();
+                input.value = '';
+                if (state === 'login_username') {
+                    username = command;
+                    addOutput(`Username: ${command}`);
+                    addOutput('Username Accepted. Enter Password...');
+                    showPrompt('Password: ');
+                    state = 'login_password';
+                    input.type = 'password';
+                } else if (state === 'login_password') {
+                    password = command;
+                    addOutput('Password: [HIDDEN]');
+                    if (username === 'Gage@snapchat.com' && password === 'Gmilner1174') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('       Snapchat Server Management Dashboard');
+                        addOutput('=======================================================');
+                        addOutput(`[ Logged in as: ${username} ]`);
+                        addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
+                        addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
+                        addOutput(`[ Last Action: ${lastAction} ]`);
+                        addOutput('Please select an option:');
+                        addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
+                        lastAction = 'Successful login';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Successful login: ${username}`);
+                        showPrompt('> ');
+                        state = 'main_menu';
+                        input.type = 'text';
+                    } else {
+                        addOutput('[ERROR] Invalid credentials.');
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Failed login attempt`);
+                        lastAction = 'Failed login attempt';
+                        showPrompt('Username: ');
+                        state = 'login_username';
+                        input.type = 'text';
+                    }
+                } else if (state === 'main_menu') {
+                    if (command === '2') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('            User Management Portal');
+                        addOutput('=======================================================');
+                        addOutput('Select an action:');
+                        addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        lastAction = 'Entered user management';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Entered user management`);
+                        state = 'manage_users';
+                    } else if (command === '3') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('            System Logs');
+                        addOutput('=======================================================');
+                        addOutput('[INFO] Retrieving logs...');
+                        setTimeout(() => {
+                            logs.forEach(log => addOutput(log));
+                            addOutput('[INFO] Log retrieval complete.');
+                            lastAction = 'Viewed system logs';
+                            logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed system logs`);
+                        }, 1000);
+                    } else if (command === '1') {
+                        addOutput('Pinging Snapchat server (104.193.186.12)...');
+                        setTimeout(() => {
+                            addOutput('[INFO] Ping complete.');
+                            lastAction = 'Server ping';
+                            logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Server ping executed`);
+                        }, 2000);
+                    } else if (command === '19') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('            Terminal Lock');
+                        addOutput('=======================================================');
+                        addOutput('[INFO] Terminal locked by Gage@snapchat.com.');
+                        lastAction = 'Locked terminal';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Terminal locked`);
+                        showPrompt('Username: ');
+                        state = 'login_username';
+                    } else {
+                        addOutput('[ERROR] Invalid Option');
+                        lastAction = 'Invalid menu option';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid menu option selected`);
+                    }
+                } else if (state === 'manage_users') {
+                    if (command === '5') {
+                        addOutput('Enter User ID to view deleted messages:');
+                        state = 'view_deleted_messages';
+                    } else if (command === '9') {
+                        addOutput('Enter User ID to view deleted snaps:');
+                        state = 'view_deleted_snaps';
+                    } else if (command === '10') {
+                        clearOutput();
+                        addOutput('=======================================================');
+                        addOutput('       Snapchat Server Management Dashboard');
+                        addOutput('=======================================================');
+                        addOutput(`[ Logged in as: ${username} ]`);
+                        addOutput(`[ Session Token: SC-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-${randomInt(1000, 9999)}-X ]`);
+                        addOutput(`[ System Time: ${new Date().toLocaleString()} ]`);
+                        addOutput(`[ Last Action: ${lastAction} ]`);
+                        addOutput('Please select an option:');
+                        addOutput('1. Ping Server\n2. Manage Users\n3. View Logs\n4. System Status\n5. Send Notification\n6. Backup Database\n7. Security Scan\n8. Restart Server\n9. Audit Accounts\n10. Update Software\n11. Monitor Bandwidth\n12. Export Reports\n13. Analyze User Activity\n14. Configure Firewall\n15. Generate Security Report\n16. Purge Archives\n17. Archive Analytics\n18. Change Theme\n19. Lock Terminal');
+                        lastAction = 'Returned to main menu';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Returned to main menu`);
+                        state = 'main_menu';
+                    } else if (command === '4') {
+                        addOutput('Enter Username to view profile:');
+                        state = 'view_profile_browser';
+                    } else {
+                        addOutput('[ERROR] Invalid Option');
+                        lastAction = 'Invalid user management option';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid user management option`);
+                    }
+                } else if (state === 'view_deleted_messages') {
+                    const userId = command;
+                    addOutput(`[INFO] Recovering deleted messages for ${userId}...`);
+                    setTimeout(() => {
+                        const msgCount = randomInt(2, 8);
+                        addOutput(`[INFO] Message Archive Size: ${randomInt(1, 5)}.${randomInt(0, 999)} MB`);
+                        for (let i = 1; i <= msgCount; i++) {
+                            const msg = messageList[randomInt(0, messageList.length - 1)];
+                            const recipient = userList[randomInt(0, userList.length - 1)];
+                            const day = String(randomInt(9, 10)).padStart(2, '0');
+                            const hour = String(randomInt(0, 23)).padStart(2, '0');
+                            const min = String(randomInt(0, 59)).padStart(2, '0');
+                            addOutput(`Message ${i}: [2025-05-${day} ${hour}:${min}:00] "${msg}" (Sent to ${recipient})`);
+                        }
+                        addOutput(`[SUCCESS] ${msgCount} messages recovered.`);
+                        lastAction = `Viewed deleted messages: ${userId}`;
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed deleted messages for: ${userId} (${msgCount} messages)`);
+                        state = 'manage_users';
+                        addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                    }, 1000);
+                } else if (state === 'view_deleted_snaps') {
+                    const userId = command;
+                    addOutput(`[INFO] Recovering deleted snaps for ${userId}...`);
+                    setTimeout(() => {
+                        const snapCount = randomInt(1, 5);
+                        addOutput(`[INFO] Snap Archive Size: ${randomInt(2, 11)}.${randomInt(0, 999)} MB`);
+                        for (let i = 1; i <= snapCount; i++) {
+                            const snap = snapList[randomInt(0, snapList.length - 1)];
+                            const duration = randomInt(1, 10);
+                            const day = String(randomInt(9, 10)).padStart(2, '0');
+                            const hour = String(randomInt(0, 23)).padStart(2, '0');
+                            const min = String(randomInt(0, 59)).padStart(2, '0');
+                            addOutput(`Snap ${i}: [2025-05-${day} ${hour}:${min}:00] "${snap}" (Duration: ${duration}s)`);
+                        }
+                        addOutput(`[SUCCESS] ${snapCount} snaps recovered.`);
+                        addOutput('Options:\n1. Export All Images\n2. View Snap Metadata\n3. Back to Manage Users');
+                        lastAction = `Viewed deleted snaps: ${userId}`;
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed deleted snaps for: ${userId} (${snapCount} snaps)`);
+                        state = 'snap_options';
+                    }, 1000);
+                } else if (state === 'snap_options') {
+                    if (command === '1') {
+                        addOutput('[INFO] Exporting snap images...');
+                        setTimeout(() => {
+                            addOutput('[PROGRESS] Compiling images... 50%');
+                            setTimeout(() => {
+                                addOutput('[PROGRESS] Finalizing export... 100%');
+                                addOutput('[SUCCESS] Images exported to SC-Snaps-2025-05-13.zip');
+                                lastAction = 'Exported snap images';
+                                logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Exported snap images`);
+                                state = 'manage_users';
+                                addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                            }, 1000);
+                        }, 1000);
+                    } else if (command === '2') {
+                        addOutput('Snap Metadata');
+                        addOutput(`Snap Count: ${randomInt(1, 5)}`);
+                        addOutput(`Filter Used: RandomFilter-${randomInt(100, 999)}`);
+                        addOutput(`Device: ${randomInt(100, 999)}Phone`);
+                        addOutput(`Location: ${randomInt(0, 90)}.${randomInt(0, 999)}N, ${randomInt(0, 180)}.${randomInt(0, 999)}W`);
+                        addOutput('[SUCCESS] Metadata retrieved.');
+                        lastAction = 'Viewed snap metadata';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed snap metadata`);
+                        state = 'manage_users';
+                        addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                    } else if (command === '3') {
+                        addOutput('Returning to User Management...');
+                        addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                        lastAction = 'Returned to user management';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Returned to user management`);
+                        state = 'manage_users';
+                    } else {
+                        addOutput('[ERROR] Invalid Option');
+                        lastAction = 'Invalid snap option';
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Invalid snap option`);
+                    }
+                } else if (state === 'view_profile_browser') {
+                    const userId = command;
+                    addOutput(`[INFO] Opening profile for ${userId}...`);
+                    setTimeout(() => {
+                        addOutput(`[SUCCESS] Please open https://www.snapchat.com/add/${userId} in your browser.`);
+                        lastAction = `Viewed profile: ${userId} in browser`;
+                        logs.push(`2025-05-13 ${new Date().toLocaleTimeString()} - Viewed profile in browser: ${userId}`);
+                        state = 'manage_users';
+                        addOutput('1. Suspend Account\n2. View User Profiles\n3. Reset Password\n4. View User Profile (Browser)\n5. View Deleted Messages\n6. Export User Data\n7. Delete Account\n8. View Search History\n9. View Deleted Snaps\n10. Back to Main Menu');
+                    }, 1000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
